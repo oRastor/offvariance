@@ -1,0 +1,4 @@
+Hi, supported commands:
+/start
+/list
+/help

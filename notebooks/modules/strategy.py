@@ -14,7 +14,7 @@ def filter_games(df: DataFrame) -> DataFrame:
     result_df = pd.concat([away_win_games_df, total_under_games_df])
     result_df = result_df.sort_values(by=['date_match'])
 
-    return result_df[['date_match', 'country_name', 'team_1_name', 'team_2_name', 'bet_type', 'odds_open']]
+    return result_df[['id', 'date_match', 'country_name', 'team_1_name', 'team_2_name', 'bet_type', 'odds_open']]
 
 
 def filter_total_under_games(df: DataFrame) -> DataFrame:
