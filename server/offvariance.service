@@ -1,0 +1,14 @@
+[Unit]
+Description=offvariance telegram bot service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/var/offvariance
+ExecStart=/usr/bin/python3 /var/offvariance/bot.py
+
+[Install]
+WantedBy=multi-user.target
