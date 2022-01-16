@@ -15,6 +15,12 @@ metrics = [
 ]
 
 
+class StrategyResult:
+    def __init__(self, games_df, metrics_df):
+        self.games_df = games_df
+        self.metrics_df = metrics_df
+
+
 def filter_correct_games(df: DataFrame):
     return df.loc[
         (df.odds_open_win1 > 0) & (df.odds_close_win1 > 0) &
@@ -95,6 +101,34 @@ def analyze_avg_udi(df: DataFrame, metrics, udi_column, low_udi=0, high_udi=0.1)
     result_df['diff'] = abs(result_df['high'] - result_df['low'])
 
     return result_df.sort_values(by=['diff'], ascending=False)
+
+
+def create_strategy_by_udi(df: DataFrame, metrics, udi_column, iterations=2, metrics_count=2, low_udi=0, high_udi=0.1) -> StrategyResult:
+    analyze_result_df = analyze_avg_udi(df, metrics, udi_column, low_udi, high_udi)
+
+    result_df = df
+
+    new_metrics = []
+    for index in analyze_result_df[0:metrics_count].index:
+        new_metrics.append(index)
+        low_value = analyze_result_df.loc[index].low
+        high_value = analyze_result_df.loc[index].high
+
+        if low_value > high_value:
+            result_df = result_df.loc[(result_df[index] <= high_value)]
+        else:
+            result_df = result_df.loc[(result_df[index] >= high_value)]
+
+    iterations = iterations - 1
+
+    if iterations <= 0:
+        metrics_df = analyze_result_df[0:metrics_count].copy()
+        metrics_df = metrics_df.rename(columns={'high': 'value'})
+        metrics_df['condition'] = '>='
+        metrics_df.loc[analyze_result_df['low'] > analyze_result_df['high'], 'condition'] = '<='
+        return StrategyResult(result_df, metrics_df[['value', 'condition']])
+
+    return create_strategy_by_udi(result_df, new_metrics, udi_column, iterations, metrics_count, low_udi, high_udi)
 
 
 def analyze_correlation(df: DataFrame, base_column: str, columns: list) -> DataFrame:
