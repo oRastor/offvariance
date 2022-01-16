@@ -38,7 +38,7 @@ mcedit .env
 Check that script games.py works 
 
 ```
-python3 find-games.py
+python3 games.py
 ```
 
 Create your own telegram bot with https://t.me/BotFather
