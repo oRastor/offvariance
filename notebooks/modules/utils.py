@@ -67,10 +67,10 @@ def populate_unfinished_metrics(df: DataFrame):
     df['simple_expected_difference_loc'] = df.team1_home_classic_xg90 - df.team2_away_classic_xg90
     df['simple_expected_total_value'] = df.team1_all_classic_xg90 + df.team2_all_classic_xg90 + df.team1_all_classic_xga90 + df.team2_all_classic_xga90
     df['simple_expected_total_value_loc'] = df.team1_home_classic_xg90 + df.team2_away_classic_xg90 + df.team1_home_classic_xga90 + df.team2_away_classic_xga90
-    df['expected_difference'] = df.team1_all_xgpower_xg_xg90noindex * df.team2_all_xgpower_xg_xga90 - df.team2_all_xgpower_xg_xg90noindex * df.team1_all_xgpower_xg_xga90
-    df['expected_total'] = df.team1_all_xgpower_xg_xg90noindex * df.team2_all_xgpower_xg_xga90 + df.team2_all_xgpower_xg_xg90noindex * df.team1_all_xgpower_xg_xga90
-    df['expected_difference_loc'] = df.team1_home_xgpower_xg_xg90noindex * df.team2_away_xgpower_xg_xga90 - df.team2_away_xgpower_xg_xg90noindex * df.team1_home_xgpower_xg_xga90
-    df['expected_total_loc'] = df.team1_home_xgpower_xg_xg90noindex * df.team2_away_xgpower_xg_xga90 + df.team2_away_xgpower_xg_xg90noindex * df.team1_home_xgpower_xg_xga90
+    df['expected_difference'] = df.team1_all_xgpower_xg_xg90noindex * df.team2_all_xgpower_xg_xga90index - df.team2_all_xgpower_xg_xg90noindex * df.team1_all_xgpower_xg_xga90index
+    df['expected_total'] = df.team1_all_xgpower_xg_xg90noindex * df.team2_all_xgpower_xg_xga90index + df.team2_all_xgpower_xg_xg90noindex * df.team1_all_xgpower_xg_xga90index
+    df['expected_difference_loc'] = df.team1_home_xgpower_xg_xg90noindex * df.team2_away_xgpower_xg_xga90index - df.team2_away_xgpower_xg_xg90noindex * df.team1_home_xgpower_xg_xga90index
+    df['expected_total_loc'] = df.team1_home_xgpower_xg_xg90noindex * df.team2_away_xgpower_xg_xga90index + df.team2_away_xgpower_xg_xg90noindex * df.team1_home_xgpower_xg_xga90index
 
 
 def print_result(df: DataFrame, profit_open_column, profit_close_column, udi_column):
