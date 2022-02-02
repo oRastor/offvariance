@@ -45,11 +45,6 @@ def populate_metrics(df: DataFrame):
     populate_unfinished_metrics(df)
     df['difference'] = df.team_1_goal - df.team_2_goal
     df['total'] = df.team_1_goal + df.team_2_goal
-    df['udi_win1'] = df.odds_open_win1 / df.odds_close_win1 - 1
-    df['udi_draw'] = df.odds_open_draw / df.odds_close_draw - 1
-    df['udi_win2'] = df.odds_open_win2 / df.odds_close_win2 - 1
-    df['udi_tm25'] = df.odds_open_tm25 / df.odds_close_tm25 - 1
-    df['udi_tb25'] = df.odds_open_tb25 / df.odds_close_tb25 - 1
     df['profit_win1_open'] = (df.difference > 0) * df.odds_open_win1 - 1
     df['profit_win1_close'] = (df.difference > 0) * df.odds_close_win1 - 1
     df['profit_draw_open'] = (df.difference == 0) * df.odds_open_draw - 1
@@ -63,6 +58,11 @@ def populate_metrics(df: DataFrame):
 
 
 def populate_unfinished_metrics(df: DataFrame):
+    df['udi_win1'] = df.odds_open_win1 / df.odds_close_win1 - 1
+    df['udi_draw'] = df.odds_open_draw / df.odds_close_draw - 1
+    df['udi_win2'] = df.odds_open_win2 / df.odds_close_win2 - 1
+    df['udi_tm25'] = df.odds_open_tm25 / df.odds_close_tm25 - 1
+    df['udi_tb25'] = df.odds_open_tb25 / df.odds_close_tb25 - 1
     df['simple_expected_difference'] = df.team1_all_classic_xg90 - df.team2_all_classic_xg90
     df['simple_expected_difference_loc'] = df.team1_home_classic_xg90 - df.team2_away_classic_xg90
     df['simple_expected_total_value'] = df.team1_all_classic_xg90 + df.team2_all_classic_xg90 + df.team1_all_classic_xga90 + df.team2_all_classic_xga90
