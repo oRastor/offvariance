@@ -21,7 +21,7 @@ class LastStorage:
 
         merged_df = df.merge(last_df, on=['id', 'bet_type'], how='left', indicator=True)
 
-        return merged_df.loc[merged_df['_merge'] == 'left_only'].drop(['_merge'], axis=1)
+        return merged_df.loc[merged_df['_merge'] == 'left_only'].drop(['_merge'], axis=1).dropna(axis='columns')
 
     def read(self) -> DataFrame:
         path = self.data_path + '/last.csv'
