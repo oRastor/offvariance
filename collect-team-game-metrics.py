@@ -19,4 +19,4 @@ result_df = aggregator.aggregate({
     'duration': CalculateContext(calculate_type=CalculateType.DURATION, calculate_location=CalculateLocation.TOTAL)
 }, True)
 
-result_df.to_csv(os.path.join(dirname, 'data/game_metrics.csv'))
+result_df.to_csv(os.path.join(dirname, 'data/game-metrics.csv'))
