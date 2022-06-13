@@ -9,13 +9,23 @@ class OffVarianceResponse:
 
 
 class OffVarianceClient:
-    BASE_URI = 'https://offvariance.com/api/public'
+    BASE_URI = 'https://offvariance.com/api/v2'
     RESOURCE_FINISHED = 'finished'
     RESOURCE_UNFINISHED = 'unfinished'
     RESOURCE_UNFINISHED_ODDS = 'unfinished-odds'
+    RESOURCE_EVENTS = 'events'
     RESOURCE_FINISHED_URI = '/csv/matches/finished/'
     RESOURCE_UNFINISHED_URI = '/csv/matches/future/'
     RESOURCE_UNFINISHED_ODDS_URI = '/csv/odds/future/'
+    RESOURCE_EVENTS_URI = '/csv/events/'
+
+    GAMES_DATA_TYPES = {
+        'game_id': int,
+        'team_1_id': int,
+        'team_2_id': int,
+        'time_first': int,
+        'time_match': int,
+    }
 
     __modification_dates = {}
 
@@ -23,6 +33,18 @@ class OffVarianceClient:
         self.key = key
         self.data_path = data_path
         self.use_in_memory_states = use_in_memory_states
+
+    def get_events(self, use_cache=False):
+        if not use_cache:
+            local_modification_date = self.get_modification_date(self.RESOURCE_EVENTS)
+            modification_date = self.request_modification_date(self.RESOURCE_EVENTS_URI)
+
+            if local_modification_date != modification_date:
+                response = self.request_data(self.RESOURCE_EVENTS_URI)
+                self.set_modification_date(self.RESOURCE_EVENTS, response.modification_date)
+                self.store_data(self.RESOURCE_EVENTS, response.data)
+
+        return self.read_data(self.RESOURCE_EVENTS)
 
     def get_finished_games(self, use_cache = False):
         if not use_cache:
@@ -107,10 +129,10 @@ class OffVarianceClient:
 
         return OffVarianceResponse(response.content, response.headers['Last-Modified'])
 
-    def read_data(self, resource_name):
+    def read_data(self, resource_name, data_types = None):
         path = self.data_path + '/' + resource_name + '.csv'
 
-        return pandas.read_csv(path)
+        return pandas.read_csv(path, dtype=data_types)
 
     @staticmethod
     def store_file(path, data, mode ='w'):
