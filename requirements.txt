@@ -3,4 +3,5 @@ requests~=2.26.0
 python-dotenv~=0.19.2
 pyTelegramBotAPI~=4.3.1
 matplotlib~=3.5.1
-xganalyzer~=0.1.2
+xgclient~=0.1.9
+xganalyzer~=0.1.9

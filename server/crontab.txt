@@ -1,1 +1,2 @@
-* * * * * cd /var/offvariance && /usr/bin/python3 find-games.py
+0 0 * * * cd /var/offvariance && make update-database
+* * * * * cd /var/offvariance && make find-new-games

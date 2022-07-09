@@ -25,20 +25,26 @@ Install python libraries
 pip3 install -r requirements.txt
 ```
 
-Copy environment example file 
+Copy environment example file and settings example file
 ```
 cp .env.example .env
+cp settings.py.example settings.py 
 ```
 
-Setup OFF_VARIANCE_KEY variable, save file (F2)
+Setup OFF_VARIANCE_KEY variable or RAPID_KEY (https://rapidapi.com/Wolf1984/api/football-xg-statistics/), save file (F2)
 ```
 mcedit .env
 ```
 
-Check that script games.py works 
+Update database, it can take a more than hour for first time
+```
+make update-database
+```
+
+Check that script `make find-games` works 
 
 ```
-python3 games.py
+make find-games
 ```
 
 Create your own telegram bot with https://t.me/BotFather

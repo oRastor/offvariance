@@ -22,6 +22,8 @@ class HistoryStorage:
         except FileNotFoundError:
             return df
 
+        df = df.reset_index()
+
         df['id'] = df['id'].astype(int)
         df['bet_type'] = df['bet_type'].astype(str)
 

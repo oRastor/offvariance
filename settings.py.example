@@ -1,0 +1,103 @@
+from xganalyzer.events_aggregator import CalculateContext, CalculateType, CalculateLocation
+from xganalyzer.season_aggregator import BasicSumMetric, AverageMetric, ExpectedGaolsPer90MinutesMetric, \
+    ExpectedGaolsPerShotMetric, ExpectedGaolsPer90IndexMinutesMetric, ExpectedGaolsPer90MinutesAverageMetric
+
+from modules.strategy import Strategy, BetType
+
+game_aggregations_metrics = {
+    'games': CalculateContext(calculate_type=CalculateType.GAMES_COUNT),
+    'duration': CalculateContext(calculate_type=CalculateType.DURATION),
+    'home_duration': CalculateContext(calculate_type=CalculateType.DURATION, calculate_location=CalculateLocation.HOME),
+    'away_duration': CalculateContext(calculate_type=CalculateType.DURATION, calculate_location=CalculateLocation.AWAY),
+    'shots_count': CalculateContext(calculate_type=CalculateType.SHOTS_COUNT),
+    'shots_against_count': CalculateContext(calculate_type=CalculateType.SHOTS_COUNT, own_shots=False),
+    'expected_goals': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS, precision=3),
+    'home_expected_goals': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS,
+                                            calculate_location=CalculateLocation.HOME, precision=3),
+    'away_expected_goals': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS,
+                                            calculate_location=CalculateLocation.HOME, precision=3),
+    'expected_goals_against': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS, own_shots=False,
+                                               precision=3),
+    'home_expected_goals_against': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS,
+                                                    calculate_location=CalculateLocation.AWAY, own_shots=False,
+                                                    precision=3),
+    'away_expected_goals_against': CalculateContext(calculate_type=CalculateType.EXPECTED_GOALS,
+                                                    calculate_location=CalculateLocation.AWAY, own_shots=False,
+                                                    precision=3),
+    'goals': CalculateContext(calculate_type=CalculateType.GOALS),
+    'shots': CalculateContext(calculate_type=CalculateType.SHOTS_COUNT),
+}
+
+season_aggregations_metrics = {
+    'finished_games': BasicSumMetric('games'),
+    'duration': BasicSumMetric('duration'),
+    'duration_avg': AverageMetric('duration', 3),
+    'xg90': ExpectedGaolsPer90MinutesMetric('expected_goals', 'duration', 3),
+    'xga90': ExpectedGaolsPer90MinutesMetric('expected_goals_against', 'duration', 3),
+    'xgsh': ExpectedGaolsPerShotMetric('expected_goals', 'shots_count', 3),
+    'xgash': ExpectedGaolsPerShotMetric('expected_goals_against', 'shots_against_count', 3),
+    'common_xg90index': ExpectedGaolsPer90IndexMinutesMetric('expected_goals', 'duration', 3),
+    'common_xga90index': ExpectedGaolsPer90IndexMinutesMetric('expected_goals_against', 'duration', 3),
+    'common_xg90avg': ExpectedGaolsPer90MinutesAverageMetric('expected_goals', 'duration', 3),
+    'home_xg90index': ExpectedGaolsPer90IndexMinutesMetric('home_expected_goals', 'home_duration', 3),
+    'home_xga90index': ExpectedGaolsPer90IndexMinutesMetric('home_expected_goals_against', 'home_duration', 3),
+    'home_xg90avg': ExpectedGaolsPer90MinutesAverageMetric('home_expected_goals', 'home_duration', 3),
+    'away_xg90index': ExpectedGaolsPer90IndexMinutesMetric('away_expected_goals', 'away_duration', 3),
+    'away_xga90index': ExpectedGaolsPer90IndexMinutesMetric('away_expected_goals_against', 'away_duration', 3),
+    'away_xg90avg': ExpectedGaolsPer90MinutesAverageMetric('away_expected_goals', 'away_duration', 3),
+}
+
+udi_metrics = {
+    'udi_home': lambda df: round(df.odds_home_open / df.odds_home_last - 1, 3),
+    'udi_draw': lambda df: round(df.odds_draw_open / df.odds_draw_last - 1, 3),
+    'udi_away': lambda df: round(df.odds_away_open / df.odds_away_last - 1, 3),
+    'udi_total_over_2_5': lambda df: round(df.odds_total_over_2_5_open / df.odds_total_over_2_5_last - 1, 3),
+    'udi_total_under_2_5': lambda df: round(df.odds_total_under_2_5_open / df.odds_total_under_2_5_last - 1, 3),
+}
+
+composite_finished_metrics = {
+    'difference': lambda df: df.home_score_final - df.away_score_final,
+    'total': lambda df: df.home_score_final + df.away_score_final,
+    'profit_home_open': lambda df: round((df.difference > 0) * df.odds_home_open - 1, 3),
+    'profit_home_last': lambda df: round((df.difference > 0) * df.odds_home_last - 1, 3),
+    'profit_draw_open': lambda df: round((df.difference == 0) * df.odds_draw_open - 1, 3),
+    'profit_draw_last': lambda df: round((df.difference == 0) * df.odds_draw_last - 1, 3),
+    'profit_away_open': lambda df: round((df.difference < 0) * df.odds_away_open - 1, 3),
+    'profit_away_last': lambda df: round((df.difference < 0) * df.odds_away_last - 1, 3),
+    'profit_total_over_2_5_open': lambda df: round((df.total > 2.5) * df.odds_total_over_2_5_open - 1, 3),
+    'profit_total_over_2_5_last': lambda df: round((df.total > 2.5) * df.odds_total_over_2_5_last - 1, 3),
+    'profit_total_under_2_5_open': lambda df: round((df.total < 2.5) * df.odds_total_under_2_5_open - 1, 3),
+    'profit_total_under_2_5_last': lambda df: round((df.total < 2.5) * df.odds_total_under_2_5_last - 1, 3),
+}
+
+composite_metrics = {
+    'expected_difference': lambda df: round(
+        df.home_team_common_xg90index * df.away_team_common_xga90index * df.home_team_common_xg90avg -
+        df.away_team_common_xg90index * df.home_team_common_xga90index * df.away_team_common_xg90avg, 3
+    ),
+    'expected_total': lambda df: round(
+        df.home_team_common_xg90index * df.away_team_common_xga90index * df.home_team_common_xg90avg +
+        df.away_team_common_xg90index * df.home_team_common_xga90index * df.away_team_common_xg90avg, 3
+    ),
+    'expected_difference_loc': lambda df: round(
+        df.home_team_home_xg90index * df.away_team_away_xga90index * df.home_team_home_xg90avg -
+        df.away_team_away_xg90index * df.home_team_home_xga90index * df.away_team_away_xg90avg, 3
+    ),
+    'expected_total_loc': lambda df: round(
+        df.home_team_home_xg90index * df.away_team_away_xga90index * df.home_team_home_xg90avg +
+        df.away_team_away_xg90index * df.home_team_home_xga90index * df.away_team_away_xg90avg, 3
+    ),
+}
+
+strategies = [
+    Strategy(
+        BetType.TOTAL_UNDER_2_5,
+        lambda df: (df['home_team_finished_games'] >= 3) & (df['away_team_finished_games'] >= 3) &
+                   (df['odds_home_open'] > 0) & (df['odds_total_under_2_5_open'] > 0) &
+                   (df['odds_home_open'] >= 1.8) & (df['odds_home_open'] <= 2.8) &
+                   (df['odds_total_under_2_5_open'] >= 2.0) & (df['odds_total_under_2_5_open'] <= 2.5) &
+                   (df['expected_total'] <= 2.33) & (df['expected_total_loc'] <= 2.83)
+        ,
+        0.05
+    )
+]
