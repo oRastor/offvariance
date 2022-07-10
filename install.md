@@ -4,7 +4,7 @@ Create account on DO https://m.do.co/c/393ff2178842
 
 Create new droplet based on ubuntu on DO
 
-Add your droplet IP on https://offvariance.com/profile/api/
+Add your droplet IP on https://offvariance.com/profile/api/ (not needed for rapid api)
 
 Login to just created instance
 

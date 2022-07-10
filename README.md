@@ -1,4 +1,4 @@
-# Off Variance API usage example
+# Off Variance API value bets detection software 
 
 Off Variance provide best quality xG statistics for more than 70 football competitions. 
 
